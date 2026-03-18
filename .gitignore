@@ -1,0 +1,35 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+#VSCode
+.vscode
+
+# sandbox artifacts (Claude Code)
+.git
+.bashrc
+.zshrc
+.zprofile
+.profile
+.bash_profile
+.gitconfig
+.gitmodules
+.claude
+.mcp.json
+.idea
+.ripgreprc
+HEAD
+hooks
+objects
+config
+refs
+
+# course repos (tracked independently)
+nmaci/
+course-content/
+course-content-dl/
+neuro-ai-course-content/
+climate-course-content/
+
+# temp files
+tmp*
