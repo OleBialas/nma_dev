@@ -24,12 +24,5 @@ objects
 config
 refs
 
-# course repos (tracked independently)
-nmaci/
-course-content/
-course-content-dl/
-neuro-ai-course-content/
-climate-course-content/
-
 # temp files
 tmp*
