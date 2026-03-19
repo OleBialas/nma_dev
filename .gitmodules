@@ -1,0 +1,15 @@
+[submodule "nmaci"]
+	path = nmaci
+	url = https://github.com/OleBialas/nmaci
+[submodule "course-content"]
+	path = course-content
+	url = https://github.com/NeuromatchAcademy/course-content
+[submodule "course-content-dl"]
+	path = course-content-dl
+	url = https://github.com/NeuromatchAcademy/course-content-dl
+[submodule "neuro-ai-course-content"]
+	path = neuro-ai-course-content
+	url = https://github.com/neuromatch/NeuroAI_Course
+[submodule "climate-course-content"]
+	path = climate-course-content
+	url = https://github.com/neuromatch/climate-course-content
