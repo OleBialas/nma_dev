@@ -18,18 +18,38 @@ All repos are independent git repositories under a shared workspace managed by `
 
 ### nmaci (CI/CD Tool)
 
-The `nmaci/scripts/` directory contains standalone Python scripts downloaded and executed on-demand by each course repo's GitHub Actions workflows:
+`nmaci` is a pip-installable Python package (`pip install git+https://github.com/OleBialas/nmaci@main`). All logic lives in `src/nmaci/` and is accessible via the `nmaci` CLI:
 
-| Script | Purpose |
-|---|---|
-| `process_notebooks.py` | Executes notebooks, extracts solutions, creates student/instructor versions |
-| `verify_exercises.py` | Checks exercise cells match solution cells (allows `...` and comments) |
-| `lint_tutorial.py` | Runs flake8/pyflakes over notebook code cells |
-| `generate_tutorial_readmes.py` | Auto-generates `README.md` with Colab/video/slide links |
-| `generate_book.py` | Builds Jupyter Book from `materials.yml` |
-| `select_notebooks.py` | Filters which notebooks to process (excludes student/instructor copies) |
-| `make_pr_comment.py` | Creates PR comment with Colab badges and lint report |
-| `find_unreferenced_content.py` | Identifies unused solution images/scripts |
+| CLI command | Module | Purpose |
+|---|---|---|
+| `nmaci process-notebooks` | `process_notebooks.py` | Executes notebooks, extracts solutions, creates student/instructor versions |
+| `nmaci verify-exercises` | `verify_exercises.py` | Checks exercise cells match solution cells (allows `...` and comments) |
+| `nmaci lint-tutorial` | `lint_tutorial.py` | Runs flake8/pyflakes over notebook code cells |
+| `nmaci generate-readmes` | `generate_tutorial_readmes.py` | Auto-generates `README.md` with Colab/video/slide links |
+| `nmaci generate-book` | `generate_book.py` | Builds Jupyter Book from `materials.yml` |
+| `nmaci generate-book-dl` | `generate_book_dl.py` | Builds Jupyter Book (Deep Learning variant) |
+| `nmaci generate-book-precourse` | `generate_book_precourse.py` | Builds Jupyter Book (Precourse variant) |
+| `nmaci select-notebooks` | `select_notebooks.py` | Filters which notebooks to process (excludes student/instructor copies) |
+| `nmaci make-pr-comment` | `make_pr_comment.py` | Creates PR comment with Colab badges and lint report |
+| `nmaci find-unreferenced` | `find_unreferenced_content.py` | Identifies unused solution images/scripts |
+| `nmaci extract-links` | `extract_links.py` | Extracts video/slide links from notebooks |
+| `nmaci parse-html` | `parse_html_for_errors.py` | Checks HTML build output for errors |
+
+**Repo structure:**
+```
+nmaci/
+  pyproject.toml               # package manifest (hatchling, uv)
+  src/nmaci/                   # source of truth — edit these
+    cli.py                     # subcommand dispatcher
+    *.py                       # one module per command
+    chatify/                   # experimental chatify subpackage
+  scripts/                     # thin shims for backward compat (do not edit)
+  tests/
+    test_process_notebooks.py
+    tutorials/                 # fixture notebooks
+```
+
+`scripts/` contains shims that delegate to `src/nmaci/` — they exist for backward compat with course repo CI that still downloads and runs `python ci/script.py`. They will be removed in Phase 2.
 
 ### Course Repos
 
@@ -92,7 +112,7 @@ Solution scripts use MD5 hashes in filenames (e.g., `W1D1_Tutorial1_Solution_abc
 
 ### Branch-Aware CI
 
-Course repo workflows support testing against a specific `nmaci` branch: include `nmaci:branch-name` in the commit message to override which branch of `nmaci` scripts are downloaded during CI.
+Course repo workflows support testing against a specific `nmaci` branch: include `nmaci:branch-name` in the commit message to override which branch is used. Currently course repos download a tarball and run scripts from `ci/`; after Phase 2 they will `pip install git+https://github.com/OleBialas/nmaci@<branch>` instead.
 
 ---
 
@@ -102,7 +122,7 @@ Course repo workflows support testing against a specific `nmaci` branch: include
 - **Jupyter:** nbformat, nbconvert, notebook, jupyter-client
 - **Scientific:** numpy, scipy, matplotlib, scikit-learn, torch/torchvision, pandas, h5py, opencv-python
 - **Build/QA:** Jupyter Book, flake8, pytest, pyyaml, Pillow, Jinja2, fuzzywuzzy, beautifulsoup4
-- **Infra:** GitHub Actions, Pixi (workspace env manager)
+- **Infra:** GitHub Actions, Pixi (workspace env manager), uv (nmaci package manager)
 
 ### Custom matplotlib styles
 
@@ -113,11 +133,12 @@ Course repo workflows support testing against a specific `nmaci` branch: include
 
 ## Development Workflow
 
-### Making Changes to nmaci Scripts
+### Making Changes to nmaci
 
-1. Edit scripts in `nmaci/scripts/`
-2. Run tests: `cd nmaci && pytest tests/`
-3. Push to a branch; course repos can test against it using `nmaci:your-branch` in commit messages
+1. Edit modules in `nmaci/src/nmaci/` (never `scripts/` — those are shims)
+2. Install locally: `cd nmaci && uv pip install -e ".[dev]"`
+3. Run tests: `pytest tests/ src/nmaci/`
+4. Push to a branch; course repos can test against it using `nmaci:your-branch` in commit messages
 
 ### Making Changes to Course Notebooks
 

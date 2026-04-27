@@ -11,19 +11,19 @@ This is a 3-phase project. Phase 1 (nmaci package) must be completed before the 
 
 ---
 
-## Phase 1: nmaci as a pip package
+## Phase 1: nmaci as a pip package ✅ COMPLETE
 
-### Current state
-- `nmaci/scripts/` contains standalone Python scripts
-- Course repos download a tarball of `nmaci` at CI time, extract scripts into `ci/`, run them as `python ci/script.py`
-- No `pyproject.toml`, not pip-installable
-- Tests exist in `nmaci/tests/test_process_notebooks.py` but invoke scripts via subprocess
-
-### Target state
-- `pip install git+https://github.com/neuromatch/nmaci@main` installs the package
-- All scripts accessible as `nmaci <command>` CLI commands
-- All functions importable: `from nmaci.process_notebooks import extract_solutions`
-- Tests use direct imports, not subprocess calls
+### What was done
+- Added `pyproject.toml` with hatchling build backend and all dependencies
+- Moved all scripts from `nmaci/scripts/` → `nmaci/src/nmaci/`
+- Refactored 5 scripts that used `sys.argv` at module level to use `main(arglist=None)`
+- Added `src/nmaci/cli.py` — single entry point dispatching all subcommands
+- Replaced `scripts/` with thin shims for backward compat with existing course repo CI
+- Updated tests to use `from nmaci.* import ...` and `sys.executable -m nmaci`
+- Moved test fixture notebooks to `tests/tutorials/`, updated kernelspec to `python3`
+- Replaced Makefile with direct pytest invocation in CI
+- Switched CI to use `uv` + `pip install -e ".[dev]"`
+- All 16 tests pass
 
 ### New repo structure
 
